@@ -34,3 +34,21 @@ def create_item():
     
     new_item =add_item(data)
     return jsonify(new_item), 201
+
+
+@app.route("/inventory/<int:item_id" , methods=["PATCH"])
+def edit_item(item_id):
+    data = request.get_json()
+
+
+    if not data:
+        return jsonify({"error": "Request body must be JSON"}), 400
+    
+    updated_item = update_item(item_id, data)
+
+    if updated_item is None:
+        return jsonify({"error": "Item not found"}), 404
+    return jsonify(updated_item), 200
+
+
+
