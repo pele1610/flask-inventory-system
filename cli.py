@@ -22,18 +22,23 @@ def main():
     while True:
         print("\n--- Inventory CLI ---")
         print("1. View all items")
-        print("2. Exit")
+        print("2. View one item")
+        print("3. Add new item")
+        print("4. Exit")
 
         choice = input("Choose an option: ")
 
         if choice == "1":
             view_all_items()
         elif choice == "2":
+            view_one_item()
+        elif choice == "3":
+            add_item()
+        elif choice == "4":
             print("Goodbye!")
             break
         else:
             print("Invalid option, try again.")
-
 
 def view_one_item():
     item_id = input("Enter item ID: ")
