@@ -101,7 +101,51 @@ def add_item():
         print(f"Item added successfully with ID {new_item['id']}.")
     else:
         print(f"Failed to add item: {response.json().get('error')}")
+def update_item():
+    item_id = input("Enter item ID to update: ")
 
+    try:
+        item_id = int(item_id)
+    except ValueError:
+        print("Invalid ID — must be a number.")
+        return
+
+    print("Leave blank to keep current value.")
+    price_input = input("New price: ")
+    stock_input = input("New stock quantity: ")
+
+    payload = {}
+
+    if price_input.strip():
+        try:
+            payload["price"] = float(price_input)
+        except ValueError:
+            print("Price must be a number.")
+            return
+
+    if stock_input.strip():
+        try:
+            payload["stock_quantity"] = int(stock_input)
+        except ValueError:
+            print("Stock quantity must be a whole number.")
+            return
+
+    if not payload:
+        print("Nothing to update.")
+        return
+
+    try:
+        response = requests.patch(f"{BASE_URL}/inventory/{item_id}", json=payload)
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the server. Is it running?")
+        return
+
+    if response.status_code == 404:
+        print("Item not found.")
+    elif response.status_code == 200:
+        print("Item updated successfully.")
+    else:
+        print(f"Update failed: {response.json().get('error')}")
 
 if __name__ == "__main__":
     main()
