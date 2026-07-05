@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from requests import get
 from data_store import get_all_items, get_item_by_id, add_item, update_item, delete_item
+from external_api import fetch_product_by_barcode
 
 app = Flask(__name__)
 
@@ -58,6 +59,15 @@ def remove_item(item_id):
     if not success:
         return jsonify({"error": "Item not found"}), 404
     return jsonify({"message": "Item deleted successfully"}), 200
+
+@app.route("/lookup/<barcode>", methods=["GET"])
+def lookup_product(barcode):
+    result = fetch_product_by_barcode(barcode)
+
+    if result is None:
+        return jsonify({"error": "Product not found or lookup failed"}), 404
+
+    return jsonify(result), 200
 
 
 if __name__ == "__main__":
