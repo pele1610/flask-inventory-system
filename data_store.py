@@ -62,3 +62,17 @@ def update_item(item_id, data):
             item[key] = data[key]
 
     return item
+
+
+def delete_item(item_id):
+    """
+    Remove an item from the inventory list.
+    Returns True if deleted, False if no matching item existed.
+    """
+    global inventory
+    item = get_item_by_id(item_id)
+    if item is None:
+        return False
+
+    inventory = [i for i in inventory if i["id"] != item_id]
+    return True
