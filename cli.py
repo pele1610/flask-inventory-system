@@ -35,5 +35,33 @@ def main():
             print("Invalid option, try again.")
 
 
+def view_one_item():
+    item_id = input("Enter item ID: ")
+
+    try:
+        item_id = int(item_id)
+    except ValueError:
+        print("Invalid ID — must be a number.")
+        return
+
+    try:
+        response = requests.get(f"{BASE_URL}/inventory/{item_id}")
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the server. Is it running?")
+        return
+
+    if response.status_code == 404:
+        print("Item not found.")
+        return
+
+    item = response.json()
+    print(f"[{item['id']}] {item['product_name']}")
+    print(f"  Brand: {item['brand']}")
+    print(f"  Price: ${item['price']}")
+    print(f"  Stock: {item['stock_quantity']}")
+    print(f"  Barcode: {item['barcode']}")
+    print(f"  Ingredients: {item['ingredients_text']}")
+
+
 if __name__ == "__main__":
     main()
