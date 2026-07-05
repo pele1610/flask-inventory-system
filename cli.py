@@ -24,7 +24,9 @@ def main():
         print("1. View all items")
         print("2. View one item")
         print("3. Add new item")
-        print("4. Exit")
+        print("4. Update an item")
+        print("5. Delete an item")
+        print("6. Exit")
 
         choice = input("Choose an option: ")
 
@@ -35,6 +37,10 @@ def main():
         elif choice == "3":
             add_item()
         elif choice == "4":
+            update_item()
+        elif choice == "5":
+            delete_item()
+        elif choice == "6":
             print("Goodbye!")
             break
         else:
