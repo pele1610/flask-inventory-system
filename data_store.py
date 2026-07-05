@@ -51,3 +51,14 @@ def add_item(data):
     next_id += 1
 
     return new_item
+
+def update_item(item_id, data):
+    item = get_item_by_id(item_id)
+    if item is None:
+        return None
+
+    for key in ["barcode", "product_name", "brand", "ingredients_text", "price", "stock_quantity"]:
+        if key in data:
+            item[key] = data[key]
+
+    return item
