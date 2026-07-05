@@ -62,6 +62,41 @@ def view_one_item():
     print(f"  Barcode: {item['barcode']}")
     print(f"  Ingredients: {item['ingredients_text']}")
 
+def add_item():
+    print("Enter new item details:")
+    barcode = input("Barcode: ")
+    product_name = input("Product name: ")
+    brand = input("Brand: ")
+    ingredients_text = input("Ingredients: ")
+
+    try:
+        price = float(input("Price: "))
+        stock_quantity = int(input("Stock quantity: "))
+    except ValueError:
+        print("Price must be a number and stock quantity must be a whole number.")
+        return
+
+    payload = {
+        "barcode": barcode,
+        "product_name": product_name,
+        "brand": brand,
+        "ingredients_text": ingredients_text,
+        "price": price,
+        "stock_quantity": stock_quantity
+    }
+
+    try:
+        response = requests.post(f"{BASE_URL}/inventory", json=payload)
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the server. Is it running?")
+        return
+
+    if response.status_code == 201:
+        new_item = response.json()
+        print(f"Item added successfully with ID {new_item['id']}.")
+    else:
+        print(f"Failed to add item: {response.json().get('error')}")
+
 
 if __name__ == "__main__":
     main()
