@@ -147,5 +147,32 @@ def update_item():
     else:
         print(f"Update failed: {response.json().get('error')}")
 
+def delete_item():
+    item_id = input("Enter item ID to delete: ")
+
+    try:
+        item_id = int(item_id)
+    except ValueError:
+        print("Invalid ID — must be a number.")
+        return
+
+    confirm = input(f"Are you sure you want to delete item {item_id}? (y/n): ")
+    if confirm.lower() != "y":
+        print("Cancelled.")
+        return
+
+    try:
+        response = requests.delete(f"{BASE_URL}/inventory/{item_id}")
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the server. Is it running?")
+        return
+
+    if response.status_code == 404:
+        print("Item not found.")
+    elif response.status_code == 200:
+        print("Item deleted successfully.")
+    else:
+        print(f"Delete failed: {response.json().get('error')}")
+
 if __name__ == "__main__":
     main()
