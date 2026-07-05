@@ -26,7 +26,8 @@ def main():
         print("3. Add new item")
         print("4. Update an item")
         print("5. Delete an item")
-        print("6. Exit")
+        print("6. Find item on API (by barcode)")
+        print("7. Exit")
 
         choice = input("Choose an option: ")
 
@@ -41,6 +42,8 @@ def main():
         elif choice == "5":
             delete_item()
         elif choice == "6":
+            lookup_product()
+        elif choice == "7":
             print("Goodbye!")
             break
         else:
@@ -179,6 +182,57 @@ def delete_item():
         print("Item deleted successfully.")
     else:
         print(f"Delete failed: {response.json().get('error')}")
+
+def lookup_product():
+    barcode = input("Enter barcode to look up: ")
+
+    try:
+        response = requests.get(f"{BASE_URL}/lookup/{barcode}")
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the server. Is it running?")
+        return
+
+    if response.status_code == 404:
+        print("Product not found on OpenFoodFacts.")
+        return
+
+    product = response.json()
+    print(f"Found: {product['product_name']}")
+    print(f"  Brand: {product['brand']}")
+    print(f"  Ingredients: {product['ingredients_text']}")
+
+    add_choice = input("Add this to inventory? (y/n): ")
+    if add_choice.lower() != "y":
+        print("Not added.")
+        return
+
+    try:
+        price = float(input("Price: "))
+        stock_quantity = int(input("Stock quantity: "))
+    except ValueError:
+        print("Price must be a number and stock quantity must be a whole number.")
+        return
+
+    payload = {
+        "barcode": product["barcode"],
+        "product_name": product["product_name"],
+        "brand": product["brand"],
+        "ingredients_text": product["ingredients_text"],
+        "price": price,
+        "stock_quantity": stock_quantity
+    }
+
+    try:
+        add_response = requests.post(f"{BASE_URL}/inventory", json=payload)
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the server. Is it running?")
+        return
+
+    if add_response.status_code == 201:
+        new_item = add_response.json()
+        print(f"Added to inventory with ID {new_item['id']}.")
+    else:
+        print(f"Failed to add: {add_response.json().get('error')}")
 
 if __name__ == "__main__":
     main()
